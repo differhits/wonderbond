@@ -5,15 +5,16 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: var(--mobile-nav-height);
+  height: 64px;
   background: var(--bg-surface);
   border-top: 1px solid var(--border-subtle);
   z-index: 200;
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
-  padding: 4px 8px;
-  box-shadow: 0 -2px 16px rgba(0,0,0,0.06);
+  padding: 4px 2px;
+  box-shadow: 0 -3px 18px rgba(0,0,0,0.08);
+  backdrop-filter: blur(12px);
 }
 
 .mobile-nav-item {
@@ -21,15 +22,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   flex: 1;
-  padding: 6px 4px;
+  padding: 4px 2px;
   text-decoration: none;
   color: var(--text-muted);
-  transition: color var(--transition-base);
+  transition: all var(--transition-base);
   position: relative;
   min-height: unset;
   border-radius: var(--radius-md);
+  min-width: 0;
 }
 
 .mobile-nav-item:hover {
@@ -40,19 +42,27 @@
   color: var(--brand-primary);
 }
 
+.mobile-nav-item.mobile-nav-admin.active {
+  color: #F59E0B;
+}
+
 .mobile-nav-icon-wrap {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 32px;
-  border-radius: 12px;
+  width: 36px;
+  height: 28px;
+  border-radius: 10px;
   transition: background var(--transition-base);
 }
 
 .mobile-nav-item.active .mobile-nav-icon-wrap {
   background: var(--brand-primary-light);
+}
+
+.mobile-nav-item.mobile-nav-admin.active .mobile-nav-icon-wrap {
+  background: rgba(245, 158, 11, 0.15);
 }
 
 .mobile-nav-badge {
@@ -61,26 +71,26 @@
   right: -4px;
   background: var(--brand-primary);
   color: white;
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  min-width: 16px;
-  height: 16px;
+  min-width: 15px;
+  height: 15px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 3px;
-  border: 2px solid var(--bg-surface);
+  border: 1.5px solid var(--bg-surface);
 }
 
 .mobile-nav-label {
-  font-size: 0.67rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-}
-
-.mobile-nav-indicator {
-  display: none; /* using icon-wrap bg instead */
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 @media (max-width: 768px) {

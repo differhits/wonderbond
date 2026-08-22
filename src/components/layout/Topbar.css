@@ -24,19 +24,20 @@
 }
 
 .topbar-logo-icon {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   background: var(--brand-gradient);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 3px 8px rgba(232,75,15,0.3);
+  flex-shrink: 0;
 }
 
 .topbar-logo-text {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--brand-primary);
   letter-spacing: -0.02em;
@@ -46,7 +47,7 @@
 .topbar-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   flex: 1;
   justify-content: center;
 }
@@ -54,10 +55,10 @@
 .topbar-nav-link {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 16px;
+  gap: 6px;
+  padding: 7px 12px;
   border-radius: var(--radius-md);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
@@ -73,7 +74,17 @@
 
 .topbar-nav-link.active {
   color: var(--brand-primary);
-  font-weight: 600;
+  font-weight: 700;
+  background: var(--brand-primary-light);
+}
+
+.topbar-nav-link.topbar-nav-admin {
+  color: #F59E0B;
+}
+
+.topbar-nav-link.topbar-nav-admin.active {
+  background: rgba(245, 158, 11, 0.15);
+  color: #D97706;
 }
 
 /* Search pill (Dates | Destination | Budget) */
@@ -83,7 +94,7 @@
   background: var(--bg-elevated);
   border: 1.5px solid var(--border-default);
   border-radius: var(--radius-full);
-  padding: 5px 6px 5px 16px;
+  padding: 5px 6px 5px 14px;
   gap: 0;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -96,10 +107,10 @@
 }
 
 .topbar-pill-item {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-secondary);
-  padding: 0 12px;
+  padding: 0 10px;
   white-space: nowrap;
 }
 
@@ -108,8 +119,8 @@
 }
 
 .topbar-pill-search-btn {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   background: var(--brand-gradient);
   border-radius: 50%;
   display: flex;
@@ -118,7 +129,7 @@
   color: white;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(232,75,15,0.3);
-  margin-left: 4px;
+  margin-left: 2px;
   cursor: pointer;
 }
 
@@ -128,6 +139,10 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.mobile-search-btn {
+  display: none;
 }
 
 .topbar-notif {
@@ -151,55 +166,265 @@
   opacity: 0.85;
 }
 
-/* Mobile only: title area */
-.topbar-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  display: none;
-}
-
-/* Mobile logo (shown on mobile instead of nav) */
-.topbar-mobile-logo {
+/* Mobile Left (Hamburger + Logo) */
+.topbar-mobile-left {
   display: none;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
+}
+
+.mobile-drawer-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.mobile-drawer-toggle-btn:hover {
+  background: var(--bg-hover);
+}
+
+.topbar-mobile-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
 }
 
 .topbar-mobile-logo-text {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--brand-primary);
 }
 
+@media (max-width: 992px) {
+  .topbar-search-pill {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .topbar {
-    padding: 0 16px;
+    padding: 0 12px;
   }
 
   .topbar-nav {
     display: none;
   }
 
-  .topbar-search-pill {
-    display: none;
+  .topbar-mobile-left {
+    display: flex;
   }
 
-  .topbar-mobile-logo {
+  .mobile-search-btn {
     display: flex;
   }
 
   .topbar-right {
-    gap: 6px;
+    gap: 4px;
   }
 }
 
-@media (min-width: 769px) {
-  .topbar-title {
-    display: none;
-  }
+/* ════════════════════════════════════════════════════════════════════════ */
+/* ─── MOBILE DRAWER SLIDE-OUT MENU ────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════════════════ */
+.mobile-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+}
+
+.mobile-drawer-content {
+  width: 84%;
+  max-width: 320px;
+  height: 100%;
+  background: var(--bg-surface);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  animation: drawerSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+
+@keyframes drawerSlideIn {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+.mobile-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mobile-drawer-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-drawer-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--brand-primary);
+}
+
+.mobile-drawer-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.mobile-drawer-user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mobile-drawer-user-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mobile-drawer-user-email {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 10px;
+  flex: 1;
+}
+
+.mobile-drawer-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.mobile-drawer-link:hover,
+.mobile-drawer-link.active {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.mobile-drawer-link.active {
+  background: var(--brand-primary-light);
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+.mobile-drawer-link.mobile-drawer-admin.active {
+  background: rgba(245, 158, 11, 0.15);
+  color: #F59E0B;
+}
+
+.mobile-drawer-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.mobile-drawer-link-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-drawer-link-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drawer-chip-hot {
+  font-size: 0.58rem;
+  font-weight: 800;
+  background: #EF4444;
+  color: white;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.drawer-chip-admin {
+  font-size: 0.58rem;
+  font-weight: 800;
+  background: #F59E0B;
+  color: white;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.mobile-drawer-link-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.mobile-drawer-footer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+.mobile-drawer-logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+  color: #ef4444;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mobile-drawer-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
 }
 
 /* ─── Search Modal ────────────────────────────────────────────────── */
@@ -207,7 +432,7 @@
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: flex-start;

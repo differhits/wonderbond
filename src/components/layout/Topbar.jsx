@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bell, Search, LayoutDashboard, Compass, Heart, Briefcase, MessageCircle, User, Globe, MapPin, Calendar, DollarSign, X } from 'lucide-react';
+import {
+  Bell, Search, LayoutDashboard, Compass, Heart, Briefcase,
+  MessageCircle, User, Globe, MapPin, Calendar, DollarSign, X,
+  Crown, Settings, LogOut, Menu, ShieldCheck, ChevronRight
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import NotificationPanel from '../notifications/NotificationPanel';
@@ -8,14 +12,14 @@ import './Topbar.css';
 
 const NAV_LINKS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/discover', icon: Compass, label: 'Discover' },
-  { to: '/matches', icon: Heart, label: 'Matches' },
-  { to: '/map', icon: MapPin, label: 'Map' },
-  { to: '/trips', icon: Briefcase, label: 'Trips' },
-  { to: '/messages', icon: MessageCircle, label: 'Messages' },
-  { to: '/profile', icon: User, label: 'Profile' },
+  { to: '/discover',  icon: Compass,         label: 'Discover' },
+  { to: '/matches',   icon: Heart,           label: 'Matches' },
+  { to: '/map',       icon: MapPin,          label: 'Travel Map' },
+  { to: '/trips',     icon: Briefcase,       label: 'Trips' },
+  { to: '/messages',  icon: MessageCircle,   label: 'Messages' },
+  { to: '/admin',     icon: Crown,           label: 'Admin Hub', isSpecial: true },
+  { to: '/profile',   icon: User,            label: 'Profile' },
 ];
-
 
 const BUDGET_OPTIONS = ['Any', 'Budget', 'Mid-range', 'Luxury'];
 
@@ -27,7 +31,6 @@ function SearchModal({ onClose }) {
   const [budget, setBudget] = useState('Any');
   const modalRef = useRef(null);
 
-  // Close on outside click
   useEffect(() => {
     const handleClick = (e) => {
       if (modalRef.current && !modalRef.current.contains(e.target)) onClose();
@@ -143,33 +146,52 @@ function SearchModal({ onClose }) {
 }
 
 export default function Topbar() {
-  const { user } = useAuth();
-  const { unreadCount } = useApp();
+  const { user, logout } = useAuth();
+  const { unreadCount, unreadMessages } = useApp();
   const location = useLocation();
   const [showNotifs, setShowNotifs] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showMobileDrawer, setShowMobileDrawer] = useState(false);
+
+  // Close drawer on route navigation
+  useEffect(() => {
+    setShowMobileDrawer(false);
+  }, [location.pathname]);
+
+  const avatar = user?.photos?.[0] || user?.avatar ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'U')}&background=E84B0F&color=fff`;
 
   return (
     <>
       <header className="topbar">
-        {/* Mobile: logo */}
-        <div className="topbar-mobile-logo">
-          <div className="topbar-logo-icon">
-            <Globe size={16} color="white" />
-          </div>
-          <span className="topbar-mobile-logo-text">WonderBond</span>
+        {/* Mobile Left: Hamburger button + Logo */}
+        <div className="topbar-mobile-left">
+          <button
+            className="mobile-drawer-toggle-btn"
+            onClick={() => setShowMobileDrawer(true)}
+            aria-label="Open Navigation Menu"
+          >
+            <Menu size={22} />
+          </button>
+
+          <Link to="/dashboard" className="topbar-mobile-logo">
+            <div className="topbar-logo-icon">
+              <Globe size={16} color="white" />
+            </div>
+            <span className="topbar-mobile-logo-text">WonderBond</span>
+          </Link>
         </div>
 
         {/* Desktop: center nav links */}
         <nav className="topbar-nav">
-          {NAV_LINKS.map(({ to, icon: Icon, label }) => {
+          {NAV_LINKS.map(({ to, icon: Icon, label, isSpecial }) => {
             const isActive = location.pathname === to ||
               (to !== '/discover' && location.pathname.startsWith(to));
             return (
               <Link
                 key={to}
                 to={to}
-                className={`topbar-nav-link ${isActive ? 'active' : ''}`}
+                className={`topbar-nav-link ${isActive ? 'active' : ''} ${isSpecial ? 'topbar-nav-admin' : ''}`}
               >
                 <Icon size={16} />
                 {label}
@@ -197,6 +219,15 @@ export default function Topbar() {
 
         {/* Right actions */}
         <div className="topbar-right">
+          {/* Mobile search trigger */}
+          <button
+            className="mobile-search-btn btn-icon"
+            onClick={() => setShowSearch(true)}
+            aria-label="Search"
+          >
+            <Search size={18} />
+          </button>
+
           <button
             className={`topbar-notif btn-icon ${showNotifs ? 'active' : ''}`}
             onClick={() => setShowNotifs(v => !v)}
@@ -213,7 +244,7 @@ export default function Topbar() {
           {user && (
             <Link to="/profile" className="topbar-avatar">
               <img
-                src={user.photos?.[0] || user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'U')}&background=E84B0F&color=fff`}
+                src={avatar}
                 alt={user.name}
                 className="avatar avatar-sm"
               />
@@ -221,6 +252,100 @@ export default function Topbar() {
           )}
         </div>
       </header>
+
+      {/* ════════════════════════════════════════════════════════════════════════ */}
+      {/* ── MOBILE FULL NAVIGATION DRAWER ─────────────────────────────────────── */}
+      {/* ════════════════════════════════════════════════════════════════════════ */}
+      {showMobileDrawer && (
+        <div className="mobile-drawer-overlay animate-fadeIn" onClick={() => setShowMobileDrawer(false)}>
+          <div className="mobile-drawer-content" onClick={e => e.stopPropagation()}>
+            {/* Drawer Header */}
+            <div className="mobile-drawer-header">
+              <div className="mobile-drawer-brand">
+                <div className="topbar-logo-icon">
+                  <Globe size={18} color="white" />
+                </div>
+                <span className="mobile-drawer-title">WonderBond</span>
+              </div>
+              <button className="btn-icon" onClick={() => setShowMobileDrawer(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* User Profile Card in Drawer */}
+            {user && (
+              <Link to="/profile" className="mobile-drawer-user-card" onClick={() => setShowMobileDrawer(false)}>
+                <img src={avatar} alt={user.name} className="avatar avatar-md" />
+                <div className="mobile-drawer-user-info">
+                  <div className="mobile-drawer-user-name">
+                    {user.name}
+                    {user.verified && <ShieldCheck size={14} color="#43e97b" />}
+                  </div>
+                  <div className="mobile-drawer-user-email">{user.email}</div>
+                  <span className="badge badge-primary badge-xs" style={{ marginTop: 4 }}>
+                    {user.travelStyle || 'Explorer'}
+                  </span>
+                </div>
+                <ChevronRight size={16} color="var(--text-muted)" style={{ marginLeft: 'auto' }} />
+              </Link>
+            )}
+
+            {/* Drawer Navigation Links */}
+            <nav className="mobile-drawer-nav">
+              {[
+                { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', desc: 'Home overview & recommendations' },
+                { to: '/discover',  icon: Compass,         label: 'Discover Partners', desc: 'Swipe & find travel matches' },
+                { to: '/map',       icon: MapPin,          label: 'Travel Map', desc: 'Interactive global hotspot map', isHot: true },
+                { to: '/trips',     icon: Briefcase,       label: 'Trips & Itineraries', desc: 'Create & join travel trips' },
+                { to: '/matches',   icon: Heart,           label: 'Matches', desc: 'Your connected travel buddies' },
+                { to: '/messages',  icon: MessageCircle,   label: 'Messages', desc: 'Live chat & conversation history', badge: unreadMessages },
+                { to: '/admin',     icon: Crown,           label: 'Admin Hub', desc: 'Full user & partner management', isAdmin: true },
+                { to: '/profile',   icon: User,            label: 'My Profile', desc: 'Edit bio, photos & preferences' },
+                { to: '/settings',  icon: Settings,        label: 'Settings & Verification', desc: 'Phone OTP, ID verify & theme' },
+              ].map(({ to, icon: Icon, label, desc, isHot, isAdmin, badge }) => {
+                const isActive = location.pathname === to || (to !== '/dashboard' && location.pathname.startsWith(to));
+                return (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={`mobile-drawer-link ${isActive ? 'active' : ''} ${isAdmin ? 'mobile-drawer-admin' : ''}`}
+                    onClick={() => setShowMobileDrawer(false)}
+                  >
+                    <div className="mobile-drawer-icon-wrap">
+                      <Icon size={20} />
+                    </div>
+                    <div className="mobile-drawer-link-text">
+                      <div className="mobile-drawer-link-label">
+                        {label}
+                        {isHot && <span className="drawer-chip-hot">HOT</span>}
+                        {isAdmin && <span className="drawer-chip-admin">HUB</span>}
+                      </div>
+                      <div className="mobile-drawer-link-desc">{desc}</div>
+                    </div>
+                    {badge > 0 && (
+                      <span className="notif-badge" style={{ marginLeft: 'auto' }}>{badge}</span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Drawer Footer */}
+            <div className="mobile-drawer-footer">
+              <button
+                className="mobile-drawer-logout-btn"
+                onClick={() => {
+                  setShowMobileDrawer(false);
+                  logout();
+                }}
+              >
+                <LogOut size={16} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showNotifs && <NotificationPanel onClose={() => setShowNotifs(false)} />}
       {showSearch && <SearchModal onClose={() => setShowSearch(false)} />}
