@@ -1,0 +1,25 @@
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-base);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  /* On mobile, add bottom padding for the nav bar */
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    padding-bottom: var(--mobile-nav-height);
+  }
+}

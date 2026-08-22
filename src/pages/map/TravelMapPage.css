@@ -1,0 +1,623 @@
+/* ─── Travel Map Page ───────────────────────────────────────────── */
+.travel-map-page {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - var(--navbar-height));
+  overflow: hidden;
+  background: var(--bg-base);
+}
+
+.leaflet-map-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* ── Top Floating Bar ── */
+.map-floating-top {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  right: 20px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  pointer-events: none;
+}
+
+.map-search-form,
+.map-filters-row,
+.map-top-actions {
+  pointer-events: auto;
+}
+
+/* Search bar */
+.map-search-form {
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-full);
+  padding: 4px 6px 4px 14px;
+  box-shadow: var(--shadow-lg);
+  min-width: 260px;
+  max-width: 340px;
+  flex: 1;
+}
+
+.map-search-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.map-search-input {
+  border: none;
+  background: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  width: 100%;
+  font-family: inherit;
+}
+
+.map-search-btn {
+  background: var(--brand-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+.map-search-btn:hover { opacity: 0.9; }
+
+/* Filter pills */
+.map-filters-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.map-filter-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.map-filter-pill:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.map-filter-pill.active {
+  background: var(--brand-primary);
+  color: white;
+  border-color: var(--brand-primary);
+  box-shadow: 0 4px 14px rgba(232, 75, 15, 0.35);
+}
+
+/* Top actions right */
+.map-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.map-radius-select {
+  padding: 7px 12px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  font-family: inherit;
+}
+
+.map-layer-toggle {
+  display: flex;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-full);
+  padding: 2px;
+  box-shadow: var(--shadow-md);
+}
+
+.layer-btn {
+  border: none;
+  background: transparent;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.layer-btn.active {
+  background: var(--bg-elevated);
+  color: var(--brand-primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.map-beacon-btn {
+  gap: 5px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(232, 75, 15, 0.35);
+}
+
+.locate-pill {
+  background: var(--bg-elevated);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #22C55E;
+}
+.locate-pill:hover {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22C55E;
+}
+
+/* ── Custom Leaflet Markers ── */
+.custom-map-icon {
+  background: transparent;
+  border: none;
+}
+
+/* Traveler Pin */
+.traveler-map-pin {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid var(--brand-primary);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 10px rgba(232, 75, 15, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: var(--bg-surface);
+}
+
+.traveler-map-pin:hover {
+  transform: scale(1.22) translateY(-4px);
+  z-index: 9999 !important;
+}
+
+.pin-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.pin-online-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22C55E;
+  border: 2px solid white;
+  box-shadow: 0 0 4px #22C55E;
+}
+
+.pin-verified-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #2D9B8A;
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid white;
+}
+
+/* Trip Pin */
+.trip-map-pin {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #E84B0F, #F5701A);
+  color: white;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(232, 75, 15, 0.4);
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 0.75rem;
+  border: 2px solid white;
+  transition: transform 0.2s;
+}
+
+.trip-map-pin:hover {
+  transform: scale(1.15) translateY(-3px);
+  z-index: 9999 !important;
+}
+
+/* Hotspot Pin */
+.hotspot-map-pin {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: white;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 0.72rem;
+  border: 2px solid white;
+  transition: transform 0.2s;
+}
+.hotspot-map-pin:hover {
+  transform: scale(1.18) translateY(-3px);
+  z-index: 9999 !important;
+}
+
+/* Beacon Pin */
+.beacon-map-pin {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #8B5CF6, #6366F1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  border: 2px solid white;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
+  cursor: pointer;
+}
+
+.beacon-wave {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid #8B5CF6;
+  animation: beaconPulse 1.6s infinite;
+}
+
+@keyframes beaconPulse {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* My GPS Location Radar */
+.my-gps-marker {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-gps-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #3B82F6;
+  border: 2.5px solid white;
+  box-shadow: 0 0 10px #3B82F6;
+  position: relative;
+  z-index: 2;
+}
+
+.my-gps-pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.35);
+  animation: gpsPulse 1.8s infinite;
+  z-index: 1;
+}
+
+@keyframes gpsPulse {
+  0% { transform: scale(0.8); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* ── Flight Distance HUD Badge (Top Center) ── */
+.flight-hud-badge {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Bottom Left Stats Overlay ── */
+.map-stats-badge {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 500;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22C55E;
+  animation: pulseAnim 1.4s infinite;
+}
+
+/* ── Selected Preview Sheet (Bottom Right) ── */
+.map-preview-sheet {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 360px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: 22px;
+  box-shadow: var(--shadow-lg);
+  z-index: 600;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.preview-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--bg-elevated);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.preview-close-btn:hover { color: var(--text-primary); }
+
+.preview-header {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.preview-avatar {
+  width: 62px;
+  height: 62px;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--border-subtle);
+}
+
+.preview-user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.preview-name-row h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.preview-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.preview-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.preview-bio {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin-bottom: 10px;
+  background: var(--bg-elevated);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+}
+
+.preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.preview-match-btn {
+  flex: 1;
+  justify-content: center;
+}
+
+/* Hotspot Preview Card */
+.hotspot-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.hotspot-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #F59E0B;
+  margin-bottom: 4px;
+}
+
+.hotspot-weather-box {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-elevated);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.hotspot-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: var(--bg-elevated);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+}
+
+.hotspot-info-grid label,
+.hotspot-highlights label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.hotspot-info-grid span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Beacon Preview Card */
+.beacon-preview-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.beacon-pulse-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8B5CF6, #6366F1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.beacon-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8B5CF6;
+}
+
+.beacon-details-box {
+  background: var(--bg-elevated);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .map-floating-top {
+    left: 10px;
+    right: 10px;
+    top: 10px;
+  }
+  .map-search-form {
+    max-width: 100%;
+  }
+  .map-preview-sheet {
+    left: 10px;
+    right: 10px;
+    bottom: 75px;
+    width: auto;
+  }
+  .map-stats-badge,
+  .flight-hud-badge {
+    display: none;
+  }
+}
