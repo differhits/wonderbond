@@ -430,7 +430,19 @@
   .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 600px) {
-  .admin-stats-grid { grid-template-columns: 1fr 1fr; }
-  .admin-tabs { overflow-x: auto; }
+  .admin-stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .admin-stat-card { padding: 12px; }
+  .admin-stat-value { font-size: 1.3rem; }
+  .admin-header { flex-direction: column; gap: 12px; align-items: stretch; }
+  .admin-users-toolbar { flex-direction: column; align-items: stretch; }
+  .admin-filter-select { max-width: 100%; }
+  .admin-tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    padding-bottom: 2px;
+  }
+  .admin-tabs::-webkit-scrollbar { display: none; }
   .admin-user-city, .admin-user-date { display: none; }
 }

@@ -490,6 +490,10 @@
     display: none !important;
   }
 
+  .hide-mobile-if-no-active {
+    display: none !important;
+  }
+
   .hide-desktop {
     display: flex !important;
   }
