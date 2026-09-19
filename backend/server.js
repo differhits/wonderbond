@@ -178,6 +178,16 @@ const connectDB = async () => {
 
 // ── Start Server ────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use by another process. Please close it or run: npx kill-port ${PORT}`);
+    process.exit(1);
+  } else {
+    console.error('❌ Server error:', err.message);
+  }
+});
+
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`⚡ Socket.io ready for real-time chat!`);
