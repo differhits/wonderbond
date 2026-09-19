@@ -12,8 +12,10 @@ const User = require('./models/User');
 // ISP DNS SRV block fix — Google DNS use karo
 dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
 
-// .env file load karo
-dotenv.config();
+const path = require('path');
+// .env file load karo — checks backend/.env first, then root .env
+dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 const server = http.createServer(app);
@@ -149,24 +151,39 @@ app.get('/', (req, res) => {
   res.json({ message: '🚀 WonderBond Backend is running!' });
 });
 
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'connecting/disconnected',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // ── MongoDB Connect ─────────────────────────────────────────────────────────
 const connectDB = async () => {
+  const uri = process.env.MONGO_URI;
+  if (!uri) {
+    console.error('❌ MongoDB Connection Error: MONGO_URI is missing in .env');
+    return;
+  }
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    const conn = await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 10000,
+    });
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
-    process.exit(1);
   }
 };
 
 // ── Start Server ────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-connectDB().then(() => {
-  server.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`⚡ Socket.io ready for real-time chat!`);
-  });
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`⚡ Socket.io ready for real-time chat!`);
 });
+
+// Connect to DB asynchronously so server is immediately responsive
+connectDB();
 
 module.exports = { getIO, getOnlineUsers };

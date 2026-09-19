@@ -2,9 +2,14 @@
  * makeAdmin.js — Apne account ko Admin banao
  * Run: node makeAdmin.js aryan01engg@gmail.com
  */
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+
+const path = require('path');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const User = require('./models/User');
 
